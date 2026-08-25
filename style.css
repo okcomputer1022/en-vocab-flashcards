@@ -354,3 +354,16 @@ header h1 {
     grid-template-columns: 1fr;
   }
 }
+.mode-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 0.78rem;
+  color: var(--color-muted);
+  cursor: pointer;
+}
+
+.mode-toggle input {
+  cursor: pointer;
+}
