@@ -5,12 +5,14 @@
 //        GitHubリポジトリのルートにアップロード（上書き）
 // iPhone側：閲覧専用。words.json をfetchして表示するだけ。
 //
-// データの優先順位（起動時）:
-//   1. このブラウザのlocalStorageに編集履歴があればそれを使う（PCでの継続編集用）
-//   2. なければ words.json をfetchして使う（iPhoneなど閲覧専用端末はここ）
-//   3. それも無ければ初期サンプルを使う
+// 各端末は「編集モード」か「閲覧モード」かを覚えている（enVocabMode）:
+//   - 編集モード：localStorageの内容を最優先で使う（PC継続編集用）
+//   - 閲覧モード：毎回words.jsonを最新で読み込む（localStorageは無視）
+//   - 初回アクセス時、既にlocalStorageに単語データがあれば自動で「編集モード」、
+//     無ければ自動で「閲覧モード」になる
 
 const STORAGE_KEY = "enVocabWords";
+const MODE_KEY = "enVocabMode";
 const JSON_FILE = "words.json";
 
 // 初期サンプル（words.jsonもlocalStorageも無い、初回起動時だけ使う）
@@ -28,28 +30,54 @@ const SEED_WORDS = [
 let words = [];
 let studyQueue = [];
 let currentIndex = 0;
+let mode = "view"; // "edit" or "view"
+
+function getMode() {
+  const saved = localStorage.getItem(MODE_KEY);
+  if (saved === "edit" || saved === "view") return saved;
+
+  // モード未設定の場合：既に編集データがあれば自動でedit、無ければview
+  const hasLocalData = !!localStorage.getItem(STORAGE_KEY);
+  const autoMode = hasLocalData ? "edit" : "view";
+  localStorage.setItem(MODE_KEY, autoMode);
+  return autoMode;
+}
+
+function setMode(newMode) {
+  mode = newMode;
+  localStorage.setItem(MODE_KEY, newMode);
+}
 
 async function initWords() {
-  const local = localStorage.getItem(STORAGE_KEY);
-  if (local) {
-    try {
-      words = JSON.parse(local);
-      setSourceBadge("このブラウザに保存されたデータを表示中（編集OK）");
-      return;
-    } catch (e) {
-      console.warn("localStorageの読み込みに失敗", e);
+  mode = getMode();
+
+  if (mode === "edit") {
+    const local = localStorage.getItem(STORAGE_KEY);
+    if (local) {
+      try {
+        words = JSON.parse(local);
+        setSourceBadge("編集モード：このブラウザに保存されたデータを表示中");
+        syncModeCheckbox();
+        return;
+      } catch (e) {
+        console.warn("localStorageの読み込みに失敗", e);
+      }
     }
   }
 
-  // localStorageが無い場合は words.json を試す
+  // 閲覧モード、または編集モードだけどローカルデータが無い場合は words.json を試す
   try {
     const res = await fetch(JSON_FILE, { cache: "no-store" });
     if (res.ok) {
       const data = await res.json();
       if (Array.isArray(data) && data.length > 0) {
-        // words.jsonにidが無い場合があるので、無ければ振る
         words = data.map((w) => ({ id: w.id || crypto.randomUUID(), ...w }));
-        setSourceBadge("words.json を読み込み中（閲覧用）");
+        setSourceBadge(
+          mode === "view"
+            ? "閲覧モード：words.json を毎回最新で読み込み中"
+            : "words.json を読み込み中（初回）"
+        );
+        syncModeCheckbox();
         return;
       }
     }
@@ -59,6 +87,7 @@ async function initWords() {
 
   words = structuredClone(SEED_WORDS);
   setSourceBadge("初期サンプルを表示中");
+  syncModeCheckbox();
 }
 
 function setSourceBadge(text) {
@@ -66,10 +95,32 @@ function setSourceBadge(text) {
   if (el) el.textContent = text;
 }
 
-function saveWords() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(words));
-  setSourceBadge("このブラウザに保存されたデータを表示中（編集OK）");
+function syncModeCheckbox() {
+  const checkbox = document.getElementById("editModeToggle");
+  if (checkbox) checkbox.checked = mode === "edit";
 }
+
+function saveWords() {
+  if (mode !== "edit") return; // 閲覧モードでは保存しない（次回もwords.jsonを見に行く）
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(words));
+  setSourceBadge("編集モード：このブラウザに保存されたデータを表示中");
+}
+
+// ------------------------------
+// モード切り替えチェックボックス
+// ------------------------------
+document.getElementById("editModeToggle").addEventListener("change", (e) => {
+  if (e.target.checked) {
+    setMode("edit");
+    // 今表示中のデータをそのままローカルに保存して編集開始
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(words));
+    setSourceBadge("編集モード：このブラウザに保存されたデータを表示中");
+  } else {
+    setMode("view");
+    localStorage.removeItem(STORAGE_KEY);
+    setSourceBadge("閲覧モード：次回読み込み時から words.json を最新表示します");
+  }
+});
 
 // ------------------------------
 // タブ切り替え
