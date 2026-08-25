@@ -1,7 +1,44 @@
 [
-  { "word": "delicious", "pronounce": "dɪˈlɪʃəs", "meaning": "おいしい、うまい", "known": false },
-  { "word": "negotiate", "pronounce": "nɪˈɡoʊʃieɪt", "meaning": "交渉する", "known": false },
-  { "word": "reliable", "pronounce": "rɪˈlaɪəbl", "meaning": "信頼できる、頼りになる", "known": false },
-  { "word": "postpone", "pronounce": "poʊstˈpoʊn", "meaning": "延期する", "known": false },
-  { "word": "efficient", "pronounce": "ɪˈfɪʃənt", "meaning": "効率的な、能率のよい", "known": false }
+  {
+    "id": "c7e67d7e-461b-436b-a30a-8e2e29b406c2",
+    "word": "negotiate",
+    "pronounce": "nɪˈɡoʊʃieɪt",
+    "meaning": "交渉する",
+    "known": false
+  },
+  {
+    "id": "7cd06cee-3215-402f-b5fa-93ba41584cda",
+    "word": "reliable",
+    "pronounce": "rɪˈlaɪəbl",
+    "meaning": "信頼できる、頼りになる",
+    "known": false
+  },
+  {
+    "id": "75baaaa7-6699-4c8b-a0e8-af28a7eb0156",
+    "word": "postpone",
+    "pronounce": "poʊstˈpoʊn",
+    "meaning": "延期する",
+    "known": false
+  },
+  {
+    "id": "8d10f9d5-9e3a-45ea-8461-3b38b5c3345a",
+    "word": "efficient",
+    "pronounce": "ɪˈfɪʃənt",
+    "meaning": "効率的な、能率のよい",
+    "known": false
+  },
+  {
+    "id": "6b920b6f-14d1-4323-be2a-104365d29d3c",
+    "word": "quite",
+    "pronounce": "/kwάɪt(米国英語)/",
+    "meaning": "① 「かなり、まあまあ」(程度が中くらい) - 一番よく使う\n\nIt's quite good.(まあまあ良い)\nShe's quite tall.(彼女はけっこう背が高い)\n\n② 「完全に、まったく」(gradableじゃない形容詞と一緒に使うとき)\n\nYou're quite right.(あなたは全くその通り)\nThat's quite different.(それは全然違う)\nI'm quite sure.(私は確信してる)\n\nこの②の場合、\"right\"や\"different\"、\"sure\"みたいに「白黒はっきりしてる」系の形容詞と組み合わさると、「完全に」の意味に変わるんや。\n\n③ 驚きを表す表現(\"quite a ~\")\n\nThat's quite a story!(それはすごい話やな!)\nIt was quite a surprise.(かなりの驚きやった)",
+    "known": false
+  },
+  {
+    "id": "f5c064c3-6bed-40ad-a323-bcc528a068f3",
+    "word": "savory",
+    "pronounce": "/ˈseɪvəri/(セイヴァリ)",
+    "meaning": "savory は「風味豊かな、香ばしい」「(甘くなく)しょっぱい・うま味系の」って意味の形容詞やで。\n\n発音は /ˈseɪvəri/(セイヴァリ)。\n\n主な使い方:\n\n甘い(sweet)の対義語として、しょっぱい系・うま味系の料理を指す\nI prefer savory snacks to sweet ones.(甘いお菓子より、しょっぱい系のスナックの方が好き)\n料理が「風味豊か、コクがある」ことを表現\nThe soup had a rich, savory flavor.(スープは濃厚で風味豊かな味やった)\n\n日本語の「うま味」的なニュアンスも含むから、和食の説明するときにも便利な単語やで。例えば定食とか味噌汁の味を説明するときに:\n\nMiso soup has a savory, umami-rich taste.(味噌汁はしょっぱくて、うま味豊かな味がする)",
+    "known": false
+  }
 ]
