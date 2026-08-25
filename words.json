@@ -1,0 +1,7 @@
+[
+  { "word": "delicious", "pronounce": "dɪˈlɪʃəs", "meaning": "おいしい、うまい", "known": false },
+  { "word": "negotiate", "pronounce": "nɪˈɡoʊʃieɪt", "meaning": "交渉する", "known": false },
+  { "word": "reliable", "pronounce": "rɪˈlaɪəbl", "meaning": "信頼できる、頼りになる", "known": false },
+  { "word": "postpone", "pronounce": "poʊstˈpoʊn", "meaning": "延期する", "known": false },
+  { "word": "efficient", "pronounce": "ɪˈfɪʃənt", "meaning": "効率的な、能率のよい", "known": false }
+]

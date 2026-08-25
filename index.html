@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>英単語帳</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>📘 英単語帳</h1>
+      <div class="stats">
+        <span id="statTotal">0</span>語 中
+        <span id="statKnown">0</span>語 覚えた
+      </div>
+      <div id="sourceBadge" class="source-badge"></div>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab-btn active" data-tab="study">学習</button>
+      <button class="tab-btn" data-tab="manage">単語管理</button>
+    </nav>
+
+    <!-- 学習タブ -->
+    <section id="study" class="tab-panel active">
+      <div class="filter-row">
+        <label>
+          出題順:
+          <select id="orderSelect">
+            <option value="shuffle">シャッフル</option>
+            <option value="sequential">順番通り</option>
+            <option value="unknownFirst">「もう一回」優先</option>
+          </select>
+        </label>
+      </div>
+
+      <div id="cardArea" class="card-area">
+        <div id="flashcard" class="flashcard">
+          <div class="card-inner">
+            <div class="card-face card-front">
+              <span id="frontText">単語がありません</span>
+            </div>
+            <div class="card-face card-back">
+              <div class="back-pronounce" id="backPronounce"></div>
+              <div class="back-meaning" id="backMeaning"></div>
+            </div>
+          </div>
+        </div>
+        <p class="hint">カードをクリックでめくる</p>
+      </div>
+
+      <div class="judge-row">
+        <button id="btnUnknown" class="btn btn-again">もう一回</button>
+        <button id="btnKnown" class="btn btn-known">わかった</button>
+      </div>
+
+      <div class="nav-row">
+        <button id="btnPrev" class="btn btn-flat">← 前へ</button>
+        <span id="progressText">0 / 0</span>
+        <button id="btnNext" class="btn btn-flat">次へ →</button>
+      </div>
+    </section>
+
+    <!-- 単語管理タブ -->
+    <section id="manage" class="tab-panel">
+      <form id="addForm" class="add-form">
+        <h2>単語を追加</h2>
+        <div class="form-grid">
+          <div class="field">
+            <label for="inputWord">単語（英語・最大50文字）</label>
+            <input type="text" id="inputWord" maxlength="50" placeholder="例: delicious" required />
+          </div>
+          <div class="field">
+            <label for="inputPronounce">発音（任意・最大50文字）</label>
+            <input type="text" id="inputPronounce" maxlength="50" placeholder="例: dɪˈlɪʃəs" />
+          </div>
+          <div class="field field-wide">
+            <label for="inputMeaning">意味（日本語・最大1000文字）</label>
+            <textarea id="inputMeaning" maxlength="1000" rows="3" placeholder="例: おいしい、うまい" required></textarea>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-known">追加する</button>
+      </form>
+
+      <div class="word-list-header">
+        <h2>登録済み単語 (<span id="wordCount">0</span>)</h2>
+        <div class="list-actions">
+          <button id="btnExport" class="btn btn-flat">JSONで書き出し</button>
+          <button id="btnResetProgress" class="btn btn-flat">進捗をリセット</button>
+        </div>
+      </div>
+      <p class="export-hint">
+        「JSONで書き出し」でダウンロードした <code>words.json</code> をGitHubリポジトリのルートにアップロード（上書き）すると、iPhoneなど他の端末からもこの内容が見れるようになるで。
+      </p>
+      <table class="word-table">
+        <thead>
+          <tr>
+            <th>単語</th>
+            <th>発音</th>
+            <th>意味</th>
+            <th>状態</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="wordTableBody"></tbody>
+      </table>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
