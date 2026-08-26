@@ -367,3 +367,20 @@ header h1 {
 .mode-toggle input {
   cursor: pointer;
 }
+.form-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.edit-btn {
+  border: none;
+  background: none;
+  color: var(--color-primary);
+  cursor: pointer;
+  font-size: 0.85rem;
+  margin-right: 10px;
+}
+
+.edit-btn:hover {
+  text-decoration: underline;
+}
