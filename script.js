@@ -31,12 +31,12 @@ let words = [];
 let studyQueue = [];
 let currentIndex = 0;
 let mode = "view"; // "edit" or "view"
+let editingId = null; // 編集中の単語id（nullなら新規追加モード）
 
 function getMode() {
   const saved = localStorage.getItem(MODE_KEY);
   if (saved === "edit" || saved === "view") return saved;
 
-  // モード未設定の場合：既に編集データがあれば自動でedit、無ければview
   const hasLocalData = !!localStorage.getItem(STORAGE_KEY);
   const autoMode = hasLocalData ? "edit" : "view";
   localStorage.setItem(MODE_KEY, autoMode);
@@ -65,7 +65,6 @@ async function initWords() {
     }
   }
 
-  // 閲覧モード、または編集モードだけどローカルデータが無い場合は words.json を試す
   try {
     const res = await fetch(JSON_FILE, { cache: "no-store" });
     if (res.ok) {
@@ -101,7 +100,7 @@ function syncModeCheckbox() {
 }
 
 function saveWords() {
-  if (mode !== "edit") return; // 閲覧モードでは保存しない（次回もwords.jsonを見に行く）
+  if (mode !== "edit") return;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(words));
   setSourceBadge("編集モード：このブラウザに保存されたデータを表示中");
 }
@@ -112,7 +111,6 @@ function saveWords() {
 document.getElementById("editModeToggle").addEventListener("change", (e) => {
   if (e.target.checked) {
     setMode("edit");
-    // 今表示中のデータをそのままローカルに保存して編集開始
     localStorage.setItem(STORAGE_KEY, JSON.stringify(words));
     setSourceBadge("編集モード：このブラウザに保存されたデータを表示中");
   } else {
@@ -237,24 +235,72 @@ function updateStats() {
 }
 
 // ------------------------------
-// 単語管理タブ：追加フォーム
+// 単語管理タブ：追加・編集フォーム
 // ------------------------------
-document.getElementById("addForm").addEventListener("submit", (e) => {
+const addForm = document.getElementById("addForm");
+const formTitle = document.getElementById("formTitle");
+const btnSubmit = document.getElementById("btnSubmit");
+const btnCancelEdit = document.getElementById("btnCancelEdit");
+const inputWord = document.getElementById("inputWord");
+const inputPronounce = document.getElementById("inputPronounce");
+const inputMeaning = document.getElementById("inputMeaning");
+
+addForm.addEventListener("submit", (e) => {
   e.preventDefault();
-  const word = document.getElementById("inputWord").value.trim().slice(0, 50);
-  const pronounce = document.getElementById("inputPronounce").value.trim().slice(0, 50);
-  const meaning = document.getElementById("inputMeaning").value.trim().slice(0, 1000);
+  const word = inputWord.value.trim().slice(0, 50);
+  const pronounce = inputPronounce.value.trim().slice(0, 50);
+  const meaning = inputMeaning.value.trim().slice(0, 1000);
 
   if (!word || !meaning) return;
 
-  words.push({ id: crypto.randomUUID(), word, pronounce, meaning, known: false });
-  saveWords();
+  if (editingId) {
+    // 既存単語の更新
+    const target = words.find((w) => w.id === editingId);
+    if (target) {
+      target.word = word;
+      target.pronounce = pronounce;
+      target.meaning = meaning;
+    }
+    exitEditMode();
+  } else {
+    // 新規追加
+    words.push({ id: crypto.randomUUID(), word, pronounce, meaning, known: false });
+  }
 
-  e.target.reset();
+  saveWords();
+  addForm.reset();
   renderTable();
   updateStats();
   buildQueue();
 });
+
+btnCancelEdit.addEventListener("click", () => {
+  exitEditMode();
+  addForm.reset();
+});
+
+function enterEditMode(id) {
+  const target = words.find((w) => w.id === id);
+  if (!target) return;
+
+  editingId = id;
+  inputWord.value = target.word;
+  inputPronounce.value = target.pronounce || "";
+  inputMeaning.value = target.meaning;
+
+  formTitle.textContent = "単語を編集";
+  btnSubmit.textContent = "更新する";
+  btnCancelEdit.hidden = false;
+
+  addForm.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function exitEditMode() {
+  editingId = null;
+  formTitle.textContent = "単語を追加";
+  btnSubmit.textContent = "追加する";
+  btnCancelEdit.hidden = true;
+}
 
 // ------------------------------
 // 単語管理タブ：一覧テーブル
@@ -270,15 +316,23 @@ function renderTable() {
       <td>${escapeHtml(w.pronounce || "")}</td>
       <td>${escapeHtml(w.meaning)}</td>
       <td><span class="badge ${w.known ? "badge-known" : "badge-unknown"}">${w.known ? "覚えた" : "未習得"}</span></td>
-      <td><button class="delete-btn" data-id="${w.id}">削除</button></td>
+      <td>
+        <button class="edit-btn" data-id="${w.id}">編集</button>
+        <button class="delete-btn" data-id="${w.id}">削除</button>
+      </td>
     `;
     tbody.appendChild(tr);
   });
 
   document.getElementById("wordCount").textContent = words.length;
 
+  tbody.querySelectorAll(".edit-btn").forEach((btn) => {
+    btn.addEventListener("click", () => enterEditMode(btn.dataset.id));
+  });
+
   tbody.querySelectorAll(".delete-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
+      if (editingId === btn.dataset.id) exitEditMode();
       words = words.filter((w) => w.id !== btn.dataset.id);
       saveWords();
       renderTable();
