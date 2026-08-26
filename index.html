@@ -69,7 +69,7 @@
     <!-- 単語管理タブ -->
     <section id="manage" class="tab-panel">
       <form id="addForm" class="add-form">
-        <h2>単語を追加</h2>
+        <h2 id="formTitle">単語を追加</h2>
         <div class="form-grid">
           <div class="field">
             <label for="inputWord">単語（英語・最大50文字）</label>
@@ -84,7 +84,10 @@
             <textarea id="inputMeaning" maxlength="1000" rows="3" placeholder="例: おいしい、うまい" required></textarea>
           </div>
         </div>
-        <button type="submit" class="btn btn-known">追加する</button>
+        <div class="form-actions">
+          <button type="submit" id="btnSubmit" class="btn btn-known">追加する</button>
+          <button type="button" id="btnCancelEdit" class="btn btn-flat" hidden>キャンセル</button>
+        </div>
       </form>
 
       <div class="word-list-header">
