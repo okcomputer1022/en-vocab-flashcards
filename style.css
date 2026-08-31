@@ -384,3 +384,12 @@ header h1 {
 .edit-btn:hover {
   text-decoration: underline;
 }
+.card-back {
+  background: var(--color-surface);
+  transform: rotateY(180deg);
+  border: 1px solid var(--color-border);
+  gap: 10px;
+  overflow-y: auto;
+  justify-content: flex-start;
+  padding-top: 32px;
+}
