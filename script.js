@@ -175,6 +175,7 @@ const progressText = document.getElementById("progressText");
 
 function showCard() {
   flashcard.classList.remove("flipped");
+  document.querySelector(".card-back").scrollTop = 0;
 
   if (studyQueue.length === 0) {
     frontText.textContent = "単語がありません。「単語管理」タブから追加してな";
