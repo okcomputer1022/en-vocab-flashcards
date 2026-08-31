@@ -172,6 +172,7 @@ orderSelect.addEventListener("change", buildQueue);
 // ------------------------------
 const flashcard = document.getElementById("flashcard");
 const frontText = document.getElementById("frontText");
+const frontPronounce = document.getElementById("frontPronounce");
 const backPronounce = document.getElementById("backPronounce");
 const backMeaning = document.getElementById("backMeaning");
 const progressText = document.getElementById("progressText");
@@ -190,6 +191,7 @@ function showCard() {
 
   const w = studyQueue[currentIndex];
   frontText.textContent = w.word;
+  frontPronounce.textContent = w.pronounce ? "🔊 " + w.pronounce : "";
   backPronounce.textContent = w.pronounce ? "🔊 " + w.pronounce : "";
   backMeaning.textContent = w.meaning;
 
