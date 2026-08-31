@@ -96,6 +96,9 @@
           <button id="btnExport" class="btn btn-flat">JSONで書き出し</button>
           <button id="btnResetProgress" class="btn btn-flat">進捗をリセット</button>
         </div>
+        <div class="search-row">
+          <input type="text" id="searchInput" placeholder="🔍 単語・意味で検索" />
+        </div>
       </div>
       <p class="export-hint">
         「JSONで書き出し」でダウンロードした <code>words.json</code> をGitHubリポジトリのルートにアップロード（上書き）すると、iPhoneなど他の端末からもこの内容が見れるようになるで。
@@ -112,6 +115,11 @@
         </thead>
         <tbody id="wordTableBody"></tbody>
       </table>
+      <div class="pagination">
+        <button id="btnPagePrev" class="btn btn-flat">← 前へ</button>
+        <span id="pageInfo">1 / 1</span>
+        <button id="btnPageNext" class="btn btn-flat">次へ →</button>
+      </div>
     </section>
   </div>
 
