@@ -14,6 +14,7 @@
 const STORAGE_KEY = "enVocabWords";
 const MODE_KEY = "enVocabMode";
 const JSON_FILE = "words.json";
+const PAGE_SIZE = 20;
 
 // 初期サンプル（words.jsonもlocalStorageも無い、初回起動時だけ使う）
 const SEED_WORDS = [
@@ -32,6 +33,8 @@ let studyQueue = [];
 let currentIndex = 0;
 let mode = "view"; // "edit" or "view"
 let editingId = null; // 編集中の単語id（nullなら新規追加モード）
+let searchQuery = "";
+let currentPage = 1;
 
 function getMode() {
   const saved = localStorage.getItem(MODE_KEY);
@@ -255,7 +258,6 @@ addForm.addEventListener("submit", (e) => {
   if (!word || !meaning) return;
 
   if (editingId) {
-    // 既存単語の更新
     const target = words.find((w) => w.id === editingId);
     if (target) {
       target.word = word;
@@ -264,7 +266,6 @@ addForm.addEventListener("submit", (e) => {
     }
     exitEditMode();
   } else {
-    // 新規追加
     words.push({ id: crypto.randomUUID(), word, pronounce, meaning, known: false });
   }
 
@@ -304,13 +305,52 @@ function exitEditMode() {
 }
 
 // ------------------------------
+// 検索
+// ------------------------------
+document.getElementById("searchInput").addEventListener("input", (e) => {
+  searchQuery = e.target.value.trim().toLowerCase();
+  currentPage = 1;
+  renderTable();
+});
+
+function getFilteredWords() {
+  if (!searchQuery) return words;
+  return words.filter(
+    (w) => w.word.toLowerCase().includes(searchQuery) || w.meaning.toLowerCase().includes(searchQuery)
+  );
+}
+
+// ------------------------------
+// ページ送り
+// ------------------------------
+document.getElementById("btnPagePrev").addEventListener("click", () => {
+  if (currentPage > 1) {
+    currentPage--;
+    renderTable();
+  }
+});
+
+document.getElementById("btnPageNext").addEventListener("click", () => {
+  currentPage++;
+  renderTable();
+});
+
+// ------------------------------
 // 単語管理タブ：一覧テーブル
 // ------------------------------
 function renderTable() {
+  const filtered = getFilteredWords();
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  if (currentPage > totalPages) currentPage = totalPages;
+  if (currentPage < 1) currentPage = 1;
+
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const pageItems = filtered.slice(start, start + PAGE_SIZE);
+
   const tbody = document.getElementById("wordTableBody");
   tbody.innerHTML = "";
 
-  words.forEach((w) => {
+  pageItems.forEach((w) => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${escapeHtml(w.word)}</td>
@@ -325,7 +365,12 @@ function renderTable() {
     tbody.appendChild(tr);
   });
 
-  document.getElementById("wordCount").textContent = words.length;
+  document.getElementById("wordCount").textContent = searchQuery
+    ? `${filtered.length} / ${words.length}`
+    : words.length;
+  document.getElementById("pageInfo").textContent = `${currentPage} / ${totalPages}`;
+  document.getElementById("btnPagePrev").disabled = currentPage <= 1;
+  document.getElementById("btnPageNext").disabled = currentPage >= totalPages;
 
   tbody.querySelectorAll(".edit-btn").forEach((btn) => {
     btn.addEventListener("click", () => enterEditMode(btn.dataset.id));
