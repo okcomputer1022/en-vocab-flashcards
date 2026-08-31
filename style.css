@@ -148,6 +148,13 @@ header h1 {
   font-weight: bold;
   word-break: break-word;
 }
+#frontPronounce {
+  margin-top: 8px;
+  font-size: 1rem;
+  font-weight: normal;
+  font-style: italic;
+  opacity: 0.85;
+}
 
 .card-back {
   background: var(--color-surface);
